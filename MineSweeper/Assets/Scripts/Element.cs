@@ -6,7 +6,13 @@ public class Element : MonoBehaviour
 {
 
     [SerializeField]
-    public bool mine; //é uma mina ?
+    public bool mine = false; //é uma mina ?
+
+    [SerializeField]
+    public bool flag; // tem bandeira?
+
+    [SerializeField]
+    public int nearbyMines = 0;
 
     [SerializeField]
     private Sprite[] emptyTextures; //imagem que irá usar caso não for mina, representa os espaços que não tem minas
@@ -14,16 +20,24 @@ public class Element : MonoBehaviour
     [SerializeField]
     private Sprite mineTexture; // aqui representa se houver uma mina utilizará essa sprite
 
+    [SerializeField]
+    private Sprite flagTexture; // aqui representa se houver uma mina utilizará essa sprite
+
+    private Sprite originalTexture; // sprite 
 
     void Start()
     {
-        mine = Random.value < 0.15; //configurando uma probabilidade de spawnar uma mina
+        originalTexture = GetComponent<SpriteRenderer>().sprite;
+
+        //mine = Random.value < 0.15; //configurando uma probabilidade de spawnar uma mina
+
+        flag = false; // Inicia desativada
 
         //registra o bloco na matriz de blocos
         int x = (int)transform.position.x;
         int y = (int)transform.position.y;
 
-        GameController.elements[x, y] = this;
+        //GameController.elements[x, y] = this;
     }
 
     
@@ -33,30 +47,82 @@ public class Element : MonoBehaviour
     }
     //qual imagem irá carregar após clicar no bloco
 
+    public void SetUpMine()
+    {
+        mine = true;
+    }
+
+    public void AddNearbyMines()
+    {
+        nearbyMines++;
+    }
+
     //adjacentCount ira definir qual valor vai usar de sprite na tela
-    public void Loadtexture(int adjacentCount ) {
+    public void Loadtexture() {
 
         if (mine)
         {
             GetComponent<SpriteRenderer>().sprite = mineTexture; //pegar o compomente o responsavel por mostrar a imagem do objeto e troca-lo pela minetexture
-            
+
         }
         else {
-            GetComponent<SpriteRenderer>().sprite = emptyTextures[adjacentCount]; //se não, trocar pelo vetor empty
+            GetComponent<SpriteRenderer>().sprite = emptyTextures[nearbyMines]; //se não, trocar pelo vetor empty
+        }
+    }
+
+    private void LoadTextureFlag()
+    {
+        if (flag)
+        {
+            GetComponent<SpriteRenderer>().sprite = flagTexture; //pegar o compomente o responsavel por mostrar a imagem do objeto e troca-lo pela flagTexture
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().sprite = originalTexture;
         }
     }
 
     private void OnMouseUpAsButton() {
-        if (mine)
+        if (!flag)
         {
-            //tela game over
-            Loadtexture(0);
-            print("Game Over !!!");
-            GameController.UncoverMines();
+            if (mine)
+            {
+                //tela game over
+                Loadtexture();
+                print("Game Over !!!");
+                GameController.UncoverMines();
+            }
+            else
+            {
+                //lógica de proximidade de mina
+                Loadtexture();
+
+                if (nearbyMines == 0)
+                {
+                    int x = (int)transform.position.x;
+                    int y = (int)transform.position.y;
+
+                    GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().ScanAround(x, y);
+                }
+            }
         }
-        else { 
-            //lógica de proximidade de mina
-            Loadtexture(0);
+    }
+
+    // Deu erro
+    public void UncoverElement()
+    {
+        Loadtexture();
+        if (nearbyMines == 0)
+        {
+            int x = (int)transform.position.x;
+            int y = (int)transform.position.y;
+            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().ScanAround(x, y);
         }
+    }
+
+    public void UpdateFlag()
+    {
+        flag = !flag;
+        LoadTextureFlag();
     }
 }
