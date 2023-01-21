@@ -95,14 +95,15 @@ public class GameController : MonoBehaviour
         int maxX = MaxX(x, y);
         int minY = MinY(x, y);
         int maxY = MaxY(x, y);
+        Debug.Log($"Scan Around from {x}, {y}");
 
         for (int i = minX; i <= maxX; i++)
         {
             for (int j = minY; j <= maxY; j++)
             {
-                //Debug.Log($"{i}, {j}");
-                //if (i != x || j != y)
-                //    elements[i, j].AddNearbyMines();
+                Debug.Log($"{i}, {j}");
+                if (i != x || j != y)
+                    elements[i, j].UncoverElement();
             }
         }
     }

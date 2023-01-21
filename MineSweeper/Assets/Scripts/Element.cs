@@ -12,6 +12,9 @@ public class Element : MonoBehaviour
     public bool flag; // tem bandeira?
 
     [SerializeField]
+    public bool open = false; // tem bandeira?
+
+    [SerializeField]
     public int nearbyMines = 0;
 
     [SerializeField]
@@ -66,6 +69,7 @@ public class Element : MonoBehaviour
 
         }
         else {
+            open = true;
             GetComponent<SpriteRenderer>().sprite = emptyTextures[nearbyMines]; //se não, trocar pelo vetor empty
         }
     }
@@ -96,11 +100,12 @@ public class Element : MonoBehaviour
             {
                 //lógica de proximidade de mina
                 Loadtexture();
-
+                Debug.Log("textura trocada");
                 if (nearbyMines == 0)
                 {
                     int x = (int)transform.position.x;
                     int y = (int)transform.position.y;
+                    Debug.Log("Enviando scan around");
 
                     GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().ScanAround(x, y);
                 }
@@ -111,18 +116,24 @@ public class Element : MonoBehaviour
     // Deu erro
     public void UncoverElement()
     {
-        Loadtexture();
-        if (nearbyMines == 0)
+        if (!open)
         {
-            int x = (int)transform.position.x;
-            int y = (int)transform.position.y;
-            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().ScanAround(x, y);
+            Loadtexture();
+            if (nearbyMines == 0)
+            {
+                int x = (int)transform.position.x;
+                int y = (int)transform.position.y;
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().ScanAround(x, y);
+            }
         }
     }
 
     public void UpdateFlag()
     {
-        flag = !flag;
-        LoadTextureFlag();
+        if (!open)
+        {
+            flag = !flag;
+            LoadTextureFlag();
+        }
     }
 }
