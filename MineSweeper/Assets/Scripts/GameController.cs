@@ -39,6 +39,7 @@ public class GameController : MonoBehaviour
         }
         if(gameover && Input.GetKeyUp(KeyCode.Space)) 
         {
+            gameover = false;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
