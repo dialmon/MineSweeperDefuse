@@ -87,8 +87,9 @@ public class Element : MonoBehaviour
     }
 
     private void OnMouseUpAsButton() {
-        if (!flag)
+        if (!flag && !GameController.gameover)
         {
+
             if (mine)
             {
                 Loadtexture();
