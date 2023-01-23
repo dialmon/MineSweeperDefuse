@@ -91,7 +91,6 @@ public class Element : MonoBehaviour
         {
             if (mine)
             {
-                //tela game over
                 Loadtexture();
                 print("Game Over !!!");
                 GameController.UncoverMines();

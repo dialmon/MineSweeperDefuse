@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class GameController : MonoBehaviour
     public static Element[,] elements = new Element[w, h]; //aqui cria uma matriz de elementos registra todo os blocos que possui
 
     private int maxMines = 10;
+
+    public static bool gameover = false;
 
     void Start()
     {
@@ -33,6 +36,10 @@ public class GameController : MonoBehaviour
             {
                 elements[(int)hit.collider.gameObject.transform.position.x, (int)hit.collider.gameObject.transform.position.y].UpdateFlag();
             }
+        }
+        if(gameover && Input.GetKeyUp(KeyCode.Space)) 
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 
@@ -123,13 +130,17 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public static void UncoverMines() { 
+    public static void UncoverMines() {
+
+        gameover = true;
+
 
         foreach(Element item in elements) {
 
             if (item.mine) {
                 item.Loadtexture();
             }
+
         }
     }
 }
